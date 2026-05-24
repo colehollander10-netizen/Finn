@@ -66,6 +66,7 @@ struct FinnApp: App {
     private let notificationDelegate: NotificationDelegate
     private let notificationEngine = NotificationEngine()
     private let autoImportService = AutoImportService()
+    private let appEntitlements = AppEntitlements()
 
     init() {
         let router = AppRouter()
@@ -96,6 +97,7 @@ struct FinnApp: App {
                 .modelContainer(Self.modelContainer)
                 .environment(appRouter)
                 .environment(autoImportService)
+                .environment(appEntitlements)
                 // Force the warm-charcoal window background so view transitions
                 // (tab switches, sheets) don't flash white→gray before content
                 // composites in. Also forces dark color scheme everywhere so
@@ -106,6 +108,7 @@ struct FinnApp: App {
                     let context = Self.modelContainer.mainContext
                     let importedEntries = SharedCaptureImporter.importPendingEntries(context: context)
                     appRouter.showShareConfirmation(for: importedEntries)
+                    appEntitlements.start()
                     autoImportService.startTransactionUpdates(context: context)
                     await autoImportService.sync(context: context)
                 }

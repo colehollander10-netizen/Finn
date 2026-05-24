@@ -25,6 +25,7 @@
 		574130E55A56127C749A1E5B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D25200EC82BE8EB694C521 /* ContentView.swift */; };
 		58488A2C6EAC7A751057E1E2 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFE157C8F7C781A47FCDAC36 /* OnboardingView.swift */; };
 		5D5990DF25DDF594259A0507 /* CancelAssistSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64C6EC6E0997A47114F15FB2 /* CancelAssistSheet.swift */; };
+		62BD932BF06652D35961211C /* FinnProProducts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069AD13DC92F9550EEB3A523 /* FinnProProducts.swift */; };
 		6E64E2A4096B66E776399C6F /* Sheets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F1FC1B8FE89D42AFD972CDB /* Sheets.swift */; };
 		6FC13A33F5C303E9C1E347EC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4307AD5867B89D8894CDC84B /* Assets.xcassets */; };
 		75FF7968534152C747204048 /* SubscriptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA79EA6EC18DD5986E66792 /* SubscriptionsView.swift */; };
@@ -34,6 +35,7 @@
 		8C73E645E369B77DC2C5D64B /* CatalogService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49C1877FE5D0A2BC47758237 /* CatalogService.swift */; };
 		8C87D0AF37A5A1DD1010F16A /* LogoService in Frameworks */ = {isa = PBXBuildFile; productRef = 0D09801CAC3183182DC56858 /* LogoService */; };
 		93883469DB038B67F5D73B2A /* FinnShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = DFB1EBA8A47D1D1434FBB21E /* FinnShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		98010CD743FDC5AC50449707 /* AppEntitlements.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE557B28D4FB42506D0E1BC9 /* AppEntitlements.swift */; };
 		9D69903AE071374731CBDC54 /* ShareHandoffStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 810943F3573B4E8B5A29CF73 /* ShareHandoffStore.swift */; };
 		AD2CE804EA8C265D1E6092B3 /* AddSubscriptionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AEA805D2F192877A75423DE /* AddSubscriptionSheet.swift */; };
 		AF0D4379A93C08B431AB1FB7 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A40702CE570CA30FC07024 /* HomeView.swift */; };
@@ -47,6 +49,7 @@
 		D401CB2C67D346E43BFE63C5 /* MascotKit in Frameworks */ = {isa = PBXBuildFile; productRef = BED01BE17C2591D8B7693AE7 /* MascotKit */; };
 		D4FBFED75F7F80698FA6C7A6 /* FinnApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE998F20C6F0F84898764386 /* FinnApp.swift */; };
 		D59C6F89CAE60698903298A4 /* CancelGuideStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13B6E9EAF654548710FDE2C3 /* CancelGuideStore.swift */; };
+		D628D2804603BB15014D17DD /* FinnProPaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBB04AF5BB07F56A8EE785C3 /* FinnProPaywallView.swift */; };
 		DE097B4AA562447194EC3D0B /* OCRCore in Frameworks */ = {isa = PBXBuildFile; productRef = 61555960627B57BCE2892AB5 /* OCRCore */; };
 		E5F11ACB455C64A4DB3BF133 /* ImportConfirmationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2473BA1FD943BB63C0BC82D /* ImportConfirmationSheet.swift */; };
 		FEDE28FB6E135C3414544731 /* NotificationDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE632269442785A12814C5FB /* NotificationDelegate.swift */; };
@@ -79,6 +82,7 @@
 
 /* Begin PBXFileReference section */
 		04B0A03DEE7F9654CF14A623 /* Finn.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Finn.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		069AD13DC92F9550EEB3A523 /* FinnProProducts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinnProProducts.swift; sourceTree = "<group>"; };
 		07B68D726B0028B7C385D8EB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		07D9A005F5EFD6C39C3C2375 /* ServicesCatalog.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ServicesCatalog.json; sourceTree = "<group>"; };
 		0D220EC643097C7E9F4F65FE /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
@@ -115,6 +119,7 @@
 		BE632269442785A12814C5FB /* NotificationDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationDelegate.swift; sourceTree = "<group>"; };
 		BE998F20C6F0F84898764386 /* FinnApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinnApp.swift; sourceTree = "<group>"; };
 		CBA161D9FD49DDEFBACAD186 /* AutoImportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoImportService.swift; sourceTree = "<group>"; };
+		CE557B28D4FB42506D0E1BC9 /* AppEntitlements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEntitlements.swift; sourceTree = "<group>"; };
 		D16DD56AEEF2A47B4D0C8B7B /* PrimaryAddButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryAddButton.swift; sourceTree = "<group>"; };
 		D2473BA1FD943BB63C0BC82D /* ImportConfirmationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportConfirmationSheet.swift; sourceTree = "<group>"; };
 		DAD52B5A1C5A90F47C384246 /* FieldRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldRow.swift; sourceTree = "<group>"; };
@@ -122,6 +127,7 @@
 		E1E6CA9F9AA42E991DD3CDB5 /* LogoService */ = {isa = PBXFileReference; lastKnownFileType = folder; name = LogoService; path = Packages/LogoService; sourceTree = SOURCE_ROOT; };
 		E4D25200EC82BE8EB694C521 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		F13C4C3DDB88BD3090246CA7 /* CancelGuide.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancelGuide.swift; sourceTree = "<group>"; };
+		FBB04AF5BB07F56A8EE785C3 /* FinnProPaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinnProPaywallView.swift; sourceTree = "<group>"; };
 		FBC3EFCC15B77D608235C3AE /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 		FCE2DE6B856EC0513FCCAD03 /* OCRCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = OCRCore; path = Packages/OCRCore; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
@@ -153,6 +159,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0788B149EC7D18810FC6959A /* Entitlements */ = {
+			isa = PBXGroup;
+			children = (
+				CE557B28D4FB42506D0E1BC9 /* AppEntitlements.swift */,
+				069AD13DC92F9550EEB3A523 /* FinnProProducts.swift */,
+			);
+			path = Entitlements;
+			sourceTree = "<group>";
+		};
+		1C2600AEA0FFF8BCD31341EC /* Paywall */ = {
+			isa = PBXGroup;
+			children = (
+				FBB04AF5BB07F56A8EE785C3 /* FinnProPaywallView.swift */,
+			);
+			path = Paywall;
+			sourceTree = "<group>";
+		};
 		1EE0CFA11392D80E785FA607 /* Finn */ = {
 			isa = PBXGroup;
 			children = (
@@ -175,7 +198,9 @@
 				91C3453F9A203C698847CD40 /* TrialsView.swift */,
 				9382D5E078941C2DAB7548DD /* AddEntry */,
 				535C8EABA6A84D06ED7ED350 /* CancelAssist */,
+				0788B149EC7D18810FC6959A /* Entitlements */,
 				9346E7631B59492038C0955E /* Import */,
+				1C2600AEA0FFF8BCD31341EC /* Paywall */,
 				489B3A06617615AD64E7D261 /* Resources */,
 				61A13729B5793481DD58FBFB /* Services */,
 			);
@@ -406,6 +431,7 @@
 				096C0FF7C0D0314D937CCD44 /* AddEntryRouterSheet.swift in Sources */,
 				AD2CE804EA8C265D1E6092B3 /* AddSubscriptionSheet.swift in Sources */,
 				7E5FF7AE8E018FB35C71356E /* AmountField.swift in Sources */,
+				98010CD743FDC5AC50449707 /* AppEntitlements.swift in Sources */,
 				B1C59A2BB193F96F8C50C027 /* AutoImportService.swift in Sources */,
 				5D5990DF25DDF594259A0507 /* CancelAssistSheet.swift in Sources */,
 				241559DF44A684E7D6504D5E /* CancelGuide.swift in Sources */,
@@ -415,6 +441,8 @@
 				38F0E09136771AA2E43010B0 /* DatePickerField.swift in Sources */,
 				BF9AC36C132F0F00E952101C /* FieldRow.swift in Sources */,
 				D4FBFED75F7F80698FA6C7A6 /* FinnApp.swift in Sources */,
+				D628D2804603BB15014D17DD /* FinnProPaywallView.swift in Sources */,
+				62BD932BF06652D35961211C /* FinnProProducts.swift in Sources */,
 				189FFCE0ABA115E25E8E23EA /* GlassComponents.swift in Sources */,
 				B300A761ABC5C45830ADE074 /* Haptics.swift in Sources */,
 				AF0D4379A93C08B431AB1FB7 /* HomeView.swift in Sources */,

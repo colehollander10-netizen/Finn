@@ -1,0 +1,87 @@
+{
+  "identifier" : "B19878DA-1674-4E5F-8204-5C246EB61F3A",
+  "nonConsumables" : [
+    {
+      "displayPrice" : "59.00",
+      "familyShareable" : false,
+      "internalID" : "finn-pro-founding",
+      "localizations" : [
+        {
+          "description" : "Lifetime access to Finn Pro.",
+          "displayName" : "Finn Pro Founding",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.colehollander.subly.pro.founding",
+      "referenceName" : "Finn Pro Founding",
+      "type" : "NonConsumable"
+    }
+  ],
+  "products" : [
+
+  ],
+  "settings" : {
+    "_askToBuyEnabled" : false,
+    "_billingGracePeriodEnabled" : false,
+    "_billingRetryEnabled" : false,
+    "_failTransactionsEnabled" : false,
+    "_locale" : "en_US",
+    "_storefront" : "USA",
+    "_storeKitErrors" : [
+
+    ]
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "finn-pro",
+      "localizations" : [
+
+      ],
+      "name" : "Finn Pro",
+      "subscriptions" : [
+        {
+          "displayPrice" : "2.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "finn-pro-monthly",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Monthly access to Finn Pro.",
+              "displayName" : "Finn Pro Monthly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.colehollander.subly.pro.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Finn Pro Monthly",
+          "subscriptionGroupID" : "finn-pro",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "displayPrice" : "24.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "finn-pro-yearly",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Annual access to Finn Pro.",
+              "displayName" : "Finn Pro Yearly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.colehollander.subly.pro.yearly",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Finn Pro Yearly",
+          "subscriptionGroupID" : "finn-pro",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}

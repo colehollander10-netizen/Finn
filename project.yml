@@ -41,6 +41,7 @@ schemes:
         Finn: all
     run:
       config: Debug
+      storeKitConfiguration: Finn/FinnPro.storekit
     test:
       config: Debug
     profile:
@@ -57,6 +58,8 @@ targets:
     deploymentTarget: "18.0"
     sources:
       - path: Finn
+        excludes:
+          - FinnPro.storekit
       - path: Shared
     settings:
       base:
