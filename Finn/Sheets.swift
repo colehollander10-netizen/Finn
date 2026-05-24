@@ -356,7 +356,7 @@ struct TrialDetailSheet: View {
     private func save() {
         let trimmedName = serviceName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedName.isEmpty, !isSaving else { return }
-        if trial == nil && entitlements.tier == .free && activeTrials.count >= 3 {
+        if trial == nil && !FreeTierPolicy.canAdd(.freeTrial, currentActiveCount: activeTrials.count, isPro: entitlements.tier == .pro) {
             showingFinnProPaywall = true
             Haptics.play(.validationFail)
             return

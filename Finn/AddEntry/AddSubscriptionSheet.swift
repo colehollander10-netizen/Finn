@@ -293,7 +293,7 @@ struct AddSubscriptionSheet: View {
         guard !isSaving else { return }
         guard !trimmed.isEmpty else { return }
         guard let amount = parsedAmount else { return }
-        if entitlements.tier == .free && activeSubscriptions.count >= 10 {
+        if !FreeTierPolicy.canAdd(.subscription, currentActiveCount: activeSubscriptions.count, isPro: entitlements.tier == .pro) {
             showingFinnProPaywall = true
             Haptics.play(.validationFail)
             return

@@ -106,9 +106,16 @@ struct FinnApp: App {
                 .preferredColorScheme(.dark)
                 .task {
                     let context = Self.modelContainer.mainContext
-                    let importedEntries = SharedCaptureImporter.importPendingEntries(context: context)
-                    appRouter.showShareConfirmation(for: importedEntries)
+                    // Resolve entitlements BEFORE the first import — otherwise a
+                    // Pro user with a pending share on cold launch reads the
+                    // default `.free` tier and gets wrongly capped.
                     appEntitlements.start()
+                    await appEntitlements.refresh()
+                    let result = SharedCaptureImporter.importPendingEntries(
+                        context: context,
+                        isPro: appEntitlements.tier == .pro
+                    )
+                    appRouter.showShareImportResult(result)
                     autoImportService.startTransactionUpdates(context: context)
                     await autoImportService.sync(context: context)
                 }
@@ -117,10 +124,17 @@ struct FinnApp: App {
 
                     Task {
                         let context = Self.modelContainer.mainContext
-                        await MainActor.run {
-                            let importedEntries = SharedCaptureImporter.importPendingEntries(context: context)
-                            appRouter.showShareConfirmation(for: importedEntries)
-                        }
+                        // Re-resolve entitlements before importing: a user could
+                        // have upgraded on another device while backgrounded, and
+                        // `Transaction.updates` may not have landed yet. Without
+                        // this, a now-Pro user can be wrongly capped on resume —
+                        // the same race the cold-launch path guards against.
+                        await appEntitlements.refresh()
+                        let result = SharedCaptureImporter.importPendingEntries(
+                            context: context,
+                            isPro: appEntitlements.tier == .pro
+                        )
+                        appRouter.showShareImportResult(result)
                         await autoImportService.sync(context: context)
                     }
                 }

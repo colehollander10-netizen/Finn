@@ -4,6 +4,26 @@ Append-only. Newest at top. Each entry: what shipped, when, and the outcome that
 
 ---
 
+## FINN-006a: Pro entitlement + free-tier gating engine
+**Status:** done
+**Started:** 2026-05-24
+**Completed:** 2026-05-24
+**Why:** The `codex/finn-006-pro-entitlements` branch had ~80% of the Pro monetization built but uncommitted: a StoreKit 2 `AppEntitlements`, a `FinnProPaywallView`, and save-time gates. It shipped with a critical hole — the share-extension auto-save path (FINN-016) bypassed the gate entirely, and the limits were scattered magic numbers with no tests.
+
+### What shipped
+- Committed Codex's draft as baseline (`0f0f238`), then a hardening pass on top.
+- `FreeTierPolicy` (SubscriptionStore package) — single source of truth for the caps (3 active trials, 10 active subscriptions; Pro = unlimited). Replaces hardcoded `>= 3` / `>= 10` in `AddSubscriptionSheet` + `TrialDetailSheet`. 18 unit tests.
+- **Closed the share-extension bypass:** `SharedCaptureImporter` now enforces the cap via `FreeTierPolicy.planBatch` (the same unit-tested code path), drops over-cap captures, and reports `skippedAtLimit`.
+- Cold-launch + foreground ordering fix in `FinnApp`: entitlements `refresh()` runs before import, so a Pro user is never wrongly capped.
+- Upgrade nudge: `ShareLimitToast` in ContentView opens the paywall when captures are dropped ("you already captured these — upgrade to keep them").
+- 32 package tests pass; app builds clean (generic iOS) incl. share extension.
+
+### Not in scope (still open as FINN-006)
+- Pricing/founding-waitlist *copy* + landing-page decisions (the product half of COL-109). This ticket is the engineering half.
+- Real-device StoreKit purchase validation (sandbox) — gate logic is unit-tested but purchase flow needs on-device sandbox testing.
+
+---
+
 ## FINN-005: Manual trial entry — paste, share, OCR
 **Status:** done
 **Started:** 2026-04-22

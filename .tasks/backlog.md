@@ -9,17 +9,19 @@ Source of truth: this file + `~/Obsidian/Active/Finn/Finn.md`. Linear is archive
 ---
 
 ## FINN-006: Launch pricing + founding waitlist offer
-**Status:** backlog
+**Status:** backlog (narrowed — engineering half shipped as FINN-006a, see done.md)
 **Why:** Pricing has to match product psychology — Finn helps avoid unwanted charges, so it cannot feel like an ironic extra bill. Needs to feel obviously smaller than the surprise charge it prevents.
 
 ### Acceptance
 - [ ] Monthly + annual pricing decided and documented
 - [ ] Founding-member waitlist offer defined
 - [ ] Launch pricing copy drafted for landing page + onboarding
-- [ ] StoreKit products configured to match
+- [x] StoreKit products configured to match (FinnPro.storekit: $2.99/mo, $24.99/yr, $59 founding lifetime) — shipped in FINN-006a
+- [ ] Real-device StoreKit sandbox purchase validation
 
 ### Notes
 - Linear (archived): COL-109
+- The Pro entitlement + free-tier gating *engine* shipped 2026-05-24 as FINN-006a. What remains here is the pricing/copy/waitlist product work + on-device purchase validation.
 
 ---
 
