@@ -14,6 +14,8 @@ private let trialDetailLog = Logger(subsystem: "com.colehollander.finn", categor
 struct TrialDetailSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @Environment(AppEntitlements.self) private var entitlements
+    @Query(filter: #Predicate<Trial> { $0.entryTypeRaw == "freeTrial" && $0.statusRaw == "active" }) private var activeTrials: [Trial]
 
     let trial: Trial?
     let onSaveExisting: ((Trial) -> Void)?
@@ -51,6 +53,7 @@ struct TrialDetailSheet: View {
     @State private var ocrIsScanning: Bool = false
     @State private var showingCancelAssist = false
     @State private var isSaving = false
+    @State private var showingFinnProPaywall = false
     @State private var saveErrorMessage: String?
 
     init(
@@ -167,6 +170,9 @@ struct TrialDetailSheet: View {
             if let trial, let notificationEngine {
                 CancelAssistSheet(trial: trial, notificationEngine: notificationEngine)
             }
+        }
+        .sheet(isPresented: $showingFinnProPaywall) {
+            FinnProPaywallView()
         }
         .onChange(of: trial?.status) { _, newValue in
             if newValue == .cancelled {
@@ -350,6 +356,11 @@ struct TrialDetailSheet: View {
     private func save() {
         let trimmedName = serviceName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedName.isEmpty, !isSaving else { return }
+        if trial == nil && !FreeTierPolicy.canAdd(.freeTrial, currentActiveCount: activeTrials.count, isPro: entitlements.tier == .pro) {
+            showingFinnProPaywall = true
+            Haptics.play(.validationFail)
+            return
+        }
         isSaving = true
         saveErrorMessage = nil
         let amount = parsedAmount

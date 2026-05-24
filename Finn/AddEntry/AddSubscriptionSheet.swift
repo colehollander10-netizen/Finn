@@ -10,6 +10,8 @@ private let addSubscriptionLog = Logger(subsystem: "com.colehollander.finn", cat
 struct AddSubscriptionSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @Environment(AppEntitlements.self) private var entitlements
+    @Query(filter: #Predicate<Trial> { $0.entryTypeRaw == "subscription" && $0.statusRaw == "active" }) private var activeSubscriptions: [Trial]
 
     var onSave: (Trial) -> Void = { _ in }
 
@@ -21,6 +23,7 @@ struct AddSubscriptionSheet: View {
     @State private var searchQuery: String = ""
     @State private var hasPickedFromCatalog = false
     @State private var isSaving = false
+    @State private var showingFinnProPaywall = false
     @State private var saveErrorMessage: String?
     @FocusState private var searchFocused: Bool
 
@@ -100,6 +103,9 @@ struct AddSubscriptionSheet: View {
         }
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
+        .sheet(isPresented: $showingFinnProPaywall) {
+            FinnProPaywallView()
+        }
     }
 
     @ViewBuilder
@@ -287,6 +293,11 @@ struct AddSubscriptionSheet: View {
         guard !isSaving else { return }
         guard !trimmed.isEmpty else { return }
         guard let amount = parsedAmount else { return }
+        if !FreeTierPolicy.canAdd(.subscription, currentActiveCount: activeSubscriptions.count, isPro: entitlements.tier == .pro) {
+            showingFinnProPaywall = true
+            Haptics.play(.validationFail)
+            return
+        }
         isSaving = true
         saveErrorMessage = nil
         let entry = Trial(

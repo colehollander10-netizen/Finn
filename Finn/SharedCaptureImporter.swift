@@ -8,45 +8,84 @@ private let shareCaptureLog = Logger(subsystem: "com.colehollander.finn", catego
 
 @MainActor
 enum SharedCaptureImporter {
-    static func importPendingEntries(context: ModelContext) -> [ImportedShareEntry] {
+    /// Import any captures handed off from the share extension.
+    ///
+    /// Free-tier limits are enforced here as well as in the in-app add sheets —
+    /// otherwise a free user at the cap could keep adding entries by sharing
+    /// from outside Finn, bypassing the gate entirely. Over-cap captures are
+    /// dropped (the handoff store is a queue, not a persistent inbox) and
+    /// reported via `skippedAtLimit` so the app can nudge an upgrade.
+    ///
+    /// - Parameter isPro: whether the user holds the Pro entitlement. Callers
+    ///   must ensure entitlements are resolved (`AppEntitlements.refresh()`)
+    ///   before invoking on cold launch, or a Pro user can be wrongly capped.
+    static func importPendingEntries(context: ModelContext, isPro: Bool) -> ImportResult {
         let entries: [PendingShareEntry]
         do {
             entries = try ShareHandoffStore.pendingEntries()
         } catch {
             shareCaptureLog.error("Could not read pending share entries: \(String(describing: error), privacy: .public)")
-            return []
+            return .empty
         }
 
-        guard !entries.isEmpty else { return [] }
+        guard !entries.isEmpty else { return .empty }
 
-        var inserted = 0
-        var importedEntries: [ImportedShareEntry] = []
+        // Parse first so the gate sees only entries that would actually become
+        // a Trial — entries with no parse signal are dropped, not counted
+        // against the cap. Then plan the whole batch against the free-tier caps
+        // via the unit-tested `FreeTierPolicy.planBatch`, seeded from the store.
         var processedIDs: Set<UUID> = []
-        for entry in entries {
+        let candidates: [(entry: PendingShareEntry, trial: Trial)] = entries.compactMap { entry in
             guard let trial = makeTrial(from: entry) else {
                 shareCaptureLog.info("Ignored pending share entry with insufficient parse signal: \(entry.id.uuidString, privacy: .public)")
                 processedIDs.insert(entry.id)
-                continue
+                return nil
             }
-            context.insert(trial)
-            inserted += 1
-            importedEntries.append(ImportedShareEntry(trial: trial))
-            processedIDs.insert(entry.id)
+            return (entry, trial)
         }
 
-        guard inserted > 0 else {
+        let admissions = FreeTierPolicy.planBatch(
+            candidateTypes: candidates.map(\.trial.entryType),
+            seedActiveCounts: currentActiveCounts(context: context),
+            isPro: isPro
+        )
+
+        var importedEntries: [ImportedShareEntry] = []
+        var skippedAtLimit = 0
+        for (candidate, admitted) in zip(candidates, admissions) {
+            processedIDs.insert(candidate.entry.id)
+            if admitted {
+                context.insert(candidate.trial)
+                importedEntries.append(ImportedShareEntry(trial: candidate.trial))
+            } else {
+                shareCaptureLog.info("Skipped share capture at free-tier limit: \(candidate.entry.id.uuidString, privacy: .public)")
+                skippedAtLimit += 1
+            }
+        }
+
+        guard !importedEntries.isEmpty else {
             removeProcessedPendingEntries(processedIDs)
-            return []
+            return ImportResult(imported: [], skippedAtLimit: skippedAtLimit)
         }
 
         do {
             try context.save()
             removeProcessedPendingEntries(processedIDs)
-            return importedEntries
+            return ImportResult(imported: importedEntries, skippedAtLimit: skippedAtLimit)
         } catch {
             shareCaptureLog.error("Could not save pending share entries: \(String(describing: error), privacy: .public)")
-            return []
+            return .empty
         }
+    }
+
+    /// Count of active entries per type already in the store, used to seed the
+    /// free-tier limit check.
+    private static func currentActiveCounts(context: ModelContext) -> [EntryType: Int] {
+        let descriptor = FetchDescriptor<Trial>(
+            predicate: #Predicate { $0.statusRaw == "active" }
+        )
+        guard let active = try? context.fetch(descriptor) else { return [:] }
+        return Dictionary(grouping: active, by: { $0.entryType }).mapValues(\.count)
     }
 
     private static func makeTrial(from entry: PendingShareEntry) -> Trial? {
@@ -132,6 +171,15 @@ enum SharedCaptureImporter {
             shareCaptureLog.error("Could not clear processed share entries: \(String(describing: error), privacy: .public)")
         }
     }
+}
+
+/// Outcome of a share-extension import pass: what landed, and how many captures
+/// were dropped because the free-tier limit was hit (drives the upgrade nudge).
+struct ImportResult: Equatable {
+    let imported: [ImportedShareEntry]
+    let skippedAtLimit: Int
+
+    static let empty = ImportResult(imported: [], skippedAtLimit: 0)
 }
 
 struct ImportedShareEntry: Equatable, Identifiable {

@@ -35,6 +35,13 @@ final class AppRouter {
     var pendingSharedTrialText: String?
     var pendingShareConfirmation: ImportedShareEntry?
 
+    /// Number of share-extension captures dropped because the free-tier limit
+    /// was hit on the last import pass. Drives the "upgrade to keep them"
+    /// nudge toast. `0` means nothing to show.
+    var pendingLimitNudgeCount: Int = 0
+    /// Set when the user taps the limit nudge — the root view presents the paywall.
+    var presentingLimitPaywall = false
+
     func handle(url: URL) -> Bool {
         guard url.scheme == "finn" else { return false }
         guard url.host == "shared-trial" else { return false }
@@ -49,9 +56,15 @@ final class AppRouter {
         return true
     }
 
-    func showShareConfirmation(for entries: [ImportedShareEntry]) {
-        guard let entry = entries.last else { return }
-        pendingShareConfirmation = entry
+    func showShareImportResult(_ result: ImportResult) {
+        if let entry = result.imported.last {
+            pendingShareConfirmation = entry
+        }
+        if result.skippedAtLimit > 0 {
+            // Accumulate across rapid successive imports so the nudge count
+            // reflects the true number of dropped captures, not just the last pass.
+            pendingLimitNudgeCount += result.skippedAtLimit
+        }
     }
 
     func openShareConfirmation(_ entry: ImportedShareEntry) {
@@ -202,9 +215,26 @@ private struct RootTabView: View {
                 .padding(.horizontal, 16)
                 .padding(.top, 12)
                 .transition(.move(edge: .top).combined(with: .opacity))
+            } else if appRouter.pendingLimitNudgeCount > 0 {
+                ShareLimitToast(
+                    skippedCount: appRouter.pendingLimitNudgeCount,
+                    onTap: {
+                        Haptics.play(.rowTap)
+                        appRouter.pendingLimitNudgeCount = 0
+                        appRouter.presentingLimitPaywall = true
+                    },
+                    onDismiss: { appRouter.pendingLimitNudgeCount = 0 }
+                )
+                .padding(.horizontal, 16)
+                .padding(.top, 12)
+                .transition(.move(edge: .top).combined(with: .opacity))
             }
         }
         .animation(FinnMotion.standard, value: appRouter.pendingShareConfirmation?.id)
+        .animation(FinnMotion.standard, value: appRouter.pendingLimitNudgeCount)
+        .sheet(isPresented: Bindable(appRouter).presentingLimitPaywall) {
+            FinnProPaywallView()
+        }
     }
 }
 
@@ -273,6 +303,68 @@ private struct ShareImportToast: View {
         let date = entry.chargeDate.formatted(.dateTime.month(.abbreviated).day())
         guard let amount = entry.chargeAmount else { return date }
         return "\(date) · \(formatUSD(amount))"
+    }
+}
+
+/// Shown when the share extension captured more than the free tier allows.
+/// Tapping opens the paywall; the conversion hook is "you already captured
+/// these, upgrade to keep them."
+private struct ShareLimitToast: View {
+    let skippedCount: Int
+    let onTap: () -> Void
+    let onDismiss: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 12) {
+                Ph.sparkle.fill
+                    .color(FinnTheme.accent)
+                    .frame(width: 24, height: 24)
+                    .accessibilityHidden(true)
+
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(title)
+                        .font(.system(size: 14, weight: .semibold, design: .rounded))
+                        .foregroundStyle(FinnTheme.primaryText)
+                        .lineLimit(1)
+
+                    Text("Upgrade to Finn Pro to keep them all.")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(FinnTheme.secondaryText)
+                        .lineLimit(1)
+                }
+
+                Spacer(minLength: 8)
+
+                Ph.caretRight.bold
+                    .color(FinnTheme.tertiaryText)
+                    .frame(width: 16, height: 16)
+                    .accessibilityHidden(true)
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 12)
+            .background(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(FinnTheme.backgroundElevated)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .stroke(FinnTheme.glassBorder, lineWidth: 1)
+            )
+            .shadow(color: Color.black.opacity(0.24), radius: 18, x: 0, y: 10)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("\(title). Upgrade to Finn Pro to keep them all.")
+        .task(id: skippedCount) {
+            try? await Task.sleep(for: .seconds(4))
+            onDismiss()
+        }
+    }
+
+    private var title: String {
+        skippedCount == 1
+            ? "1 capture skipped — at your free limit"
+            : "\(skippedCount) captures skipped — at your free limit"
     }
 }
 

@@ -14,6 +14,7 @@ struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.scenePhase) private var scenePhase
     @Environment(AutoImportService.self) private var autoImportService
+    @Environment(AppEntitlements.self) private var entitlements
 
     @Query private var allTrials: [Trial]
     @State private var errorMessage: String?
@@ -23,6 +24,7 @@ struct SettingsView: View {
     @State private var lastAppleSync: Date? = UserDefaults.standard.object(forKey: "lastAppleSync") as? Date
     @State private var exportedCSVURL: URL?
     @State private var showingDeleteConfirm = false
+    @State private var showingFinnProPaywall = false
     @State private var importSheetPayload: ImportSheetPayload?
 
     var body: some View {
@@ -59,6 +61,24 @@ struct SettingsView: View {
                                         Text(errorMessage)
                                             .font(.system(size: 12, weight: .medium))
                                             .foregroundStyle(FinnTheme.urgencyCritical)
+                                    }
+                                }
+                            }
+                        }
+
+                        VStack(alignment: .leading, spacing: 12) {
+                            SectionLabel(title: "Finn Pro", trailing: entitlements.tier == .pro ? "Active" : "$2.99/mo")
+                            SurfaceCard(padding: 0) {
+                                settingsRow(
+                                    title: entitlements.tier == .pro ? "You're a Pro" : "Upgrade to Pro",
+                                    subtitle: entitlements.tier == .pro ? "Finn Pro is active on this device." : "Unlimited entries, founding lifetime option, and the full Finn toolkit.",
+                                    tint: FinnTheme.primaryText
+                                ) {
+                                    Haptics.play(.rowTap)
+                                    if entitlements.tier == .pro {
+                                        Task { await entitlements.restorePurchases() }
+                                    } else {
+                                        showingFinnProPaywall = true
                                     }
                                 }
                             }
@@ -156,6 +176,9 @@ struct SettingsView: View {
         }
         .sheet(item: $exportedCSVURL) { url in
             ShareSheet(activityItems: [url])
+        }
+        .sheet(isPresented: $showingFinnProPaywall) {
+            FinnProPaywallView()
         }
         .onChange(of: exportedCSVURL?.id) { _, newValue in
             if newValue != nil { Haptics.play(.sheetPresent) }
